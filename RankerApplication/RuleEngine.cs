@@ -17,13 +17,8 @@ namespace RankerApplication
         public int Rank(Snippet snippet)
         {
             if (Rules.Length == 0) throw new Exception("Meh");
-            
-            int result = 0;
-            foreach (var rule in Rules)
-            {
-                result = Convert.ToInt32(Math.Floor(rule.Rank(snippet) * rule.Weight));
-            }
-            return result;
+
+            return Rules.Sum(rule => Convert.ToInt32(Math.Floor(rule.Rank(snippet)*rule.Weight)));
         }
 
 

@@ -14,8 +14,6 @@ namespace RankingApplication.Tests
     [TestClass()]
     public class RuleEngineTest
     {
-
-
         private TestContext testContextInstance;
 
         /// <summary>
@@ -72,12 +70,10 @@ namespace RankingApplication.Tests
         [ExpectedException(typeof(Exception))]
         public void Rank_RuleEngineGotNoRules_ThorwsException()
         {
-            IRule[] rules = new IRule[] {}; // TODO: Initialize to an appropriate value
-            RuleEngine target = new RuleEngine(rules); // TODO: Initialize to an appropriate value
+            var rules = new IRule[] {}; // TODO: Initialize to an appropriate value
+            var target = new RuleEngine(rules); // TODO: Initialize to an appropriate value
             Snippet snippet = null; // TODO: Initialize to an appropriate value
-            int expected = 0; // TODO: Initialize to an appropriate value
-            int actual;
-            actual = target.Rank(snippet);
+            target.Rank(snippet);
             
         }
 
@@ -91,16 +87,16 @@ namespace RankingApplication.Tests
             ruleRank.Setup(m => m.Rank(It.IsAny<Snippet>())).Returns(rank);
             ruleRank.SetupGet(m => m.Weight).Returns(weight);
 
-            IRule[] rules = new IRule[] { ruleRank.Object }; 
-            RuleEngine target = new RuleEngine(rules); 
+            var rules = new IRule[] { ruleRank.Object }; 
+            var target = new RuleEngine(rules); 
             Snippet snippet = null;
-            int actual;
-            actual = target.Rank(snippet);
+
+            int actual = target.Rank(snippet);
 
             Assert.AreEqual(rank * weight, actual);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void Rank_RuleEngineGotTwoRules_ShouldReturnAggregatedMultiplicationOfSpecifiedRankAndWeight()
         {
             int rank1 = 42;
@@ -109,17 +105,26 @@ namespace RankingApplication.Tests
             int rank2 = 10;
             double weight2 = 30;
 
-            var ruleRank = new Mock<IRule>();
-            ruleRank.Setup(m => m.Rank(It.IsAny<Snippet>())).Returns(rank1);
-            ruleRank.SetupGet(m => m.Weight).Returns(weight1);
+            double expectedValue = rank1*weight1 + rank2*weight2;
 
-            IRule[] rules = new IRule[] { ruleRank.Object };
-            RuleEngine target = new RuleEngine(rules);
+            Mock<IRule> ruleRank1 = GetRuleRank(rank1, weight1);
+            Mock<IRule> ruleRank2 = GetRuleRank(rank2, weight2);
+
+            var rules = new[] { ruleRank1.Object, ruleRank2.Object };
+            var target = new RuleEngine(rules);
+
             Snippet snippet = null;
-            int actual;
-            actual = target.Rank(snippet);
+            int actual = target.Rank(snippet);
 
-            Assert.AreEqual(rank * weight, actual);
+            Assert.AreEqual(expectedValue, actual);
+        }
+
+        private static Mock<IRule> GetRuleRank(int rank, double weight)
+        {
+            var ruleRank = new Mock<IRule>();
+            ruleRank.Setup(m => m.Rank(It.IsAny<Snippet>())).Returns(rank);
+            ruleRank.SetupGet(m => m.Weight).Returns(weight);
+            return ruleRank;
         }
     }
 }
