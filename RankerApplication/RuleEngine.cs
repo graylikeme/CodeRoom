@@ -31,6 +31,6 @@ namespace RankerApplication
     {
         int Rank(Snippet snippet);
         double Weight { get; set; }
-
+        string Code { get; set; }
     }
 }

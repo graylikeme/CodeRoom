@@ -15,5 +15,7 @@ namespace RankerApplication
         public Languages Language { get; set; }
 
         public int Rank { get; set; }
+
+        public string Code {get; set; }
     }
 }
